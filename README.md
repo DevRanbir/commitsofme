@@ -1,36 +1,203 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<!-- PROJECT IMAGE / BANNER -->
+<p align="center">
+  <img width="1860" height="1056" alt="image" src="https://github.com/user-attachments/assets/f0a93fc3-c350-4e45-8813-5603ff4a64c9" />
+</p>
 
-## Getting Started
+# 🚀 CommitsOfMe
 
-First, run the development server:
+> Interactive portfolio showcasing my development journey through commits, projects, and creative visualizations.
+
+---
+
+## 📖 Description
+
+CommitsOfMe is a modern, interactive portfolio website built with Next.js 16 that visualizes a developer's journey through their commits and projects.  Featuring stunning GSAP animations, Lottie effects, and WebGL graphics using OGL, it creates an immersive experience that tells the story of growth, learning, and achievement through code.
+
+What makes it unique:
+- Advanced animations using GSAP for smooth transitions
+- Lottie animations for interactive visual elements
+- OGL (WebGL) graphics for 3D visualizations
+- Fast average color extraction for dynamic theming
+- CSV data parsing for commit history visualization
+- Modern React 19 and Next.js 16 architecture
+
+---
+
+## ✨ Features
+
+- **Commit Visualization** – Interactive display of development history
+- **GSAP Animations** – Smooth, professional transitions and effects
+- **Lottie Effects** – Beautiful micro-animations throughout
+- **WebGL Graphics** – 3D visualizations using OGL library
+- **Dynamic Theming** – Color extraction for adaptive UI
+- **Data-Driven** – Parse and visualize commit data from CSV
+- **TypeScript** – Full type safety for robust code
+- **Responsive Design** – Perfect on all devices and screen sizes
+
+---
+
+## 🧠 Tech Stack
+
+**Frontend**
+- Next.js 16.1
+- React 19.2
+- TypeScript 5
+
+**Animations & Graphics**
+- GSAP (GreenSock Animation Platform)
+- Lottie React
+- OGL (WebGL library)
+
+**Utilities**
+- Fast Average Color
+- PapaParse (CSV parsing)
+- Lucide React (icons)
+- Tailwind CSS 4
+- clsx & tailwind-merge
+
+---
+
+## 🏗️ Architecture / Workflow
+
+```text
+User → Portfolio Landing → GSAP Animations → Commit Data (CSV) → Visualization → Interactive 3D Elements (OGL)
+```
+
+---
+
+## ⚙️ Installation & Setup
 
 ```bash
+# Clone the repository
+git clone https://github.com/DevRanbir/commitsofme.git
+
+# Navigate to project
+cd commitsofme
+
+# Install dependencies
+npm install
+# or
+yarn install
+# or
+pnpm install
+
+# Start development server
 npm run dev
 # or
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
+
+# Open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔧 Build & Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Build for production
+npm run build
 
-## Learn More
+# Start production server
+npm start
 
-To learn more about Next.js, take a look at the following resources:
+# Run linter
+npm run lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧪 Usage
 
-## Deploy on Vercel
+* Step 1: Clone and install the project
+* Step 2: Customize commit data in CSV format
+* Step 3: Update portfolio content and projects
+* Step 4: Configure animations and visual effects
+* Step 5: Deploy to Vercel or your preferred hosting
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎥 Demo
+
+* **Live Demo:** Coming soon
+* **Features:**
+  - Animated commit history timeline
+  - Interactive 3D project showcases
+  - Dynamic color theming
+  - Smooth page transitions
+
+---
+
+## 📂 Project Structure
+
+```text
+commitsofme/
+├── src/
+│   ├── app/              # Next.js app directory
+│   ├── components/       # React components
+│   └── lib/              # Utility functions
+├── public/               # Static assets
+│   ├── data/            # CSV commit data
+│   └── animations/      # Lottie files
+├── package.json
+├── next.config.ts
+├── tsconfig.json
+└── README. md
+```
+
+---
+
+## 🚧 Future Improvements
+
+- [ ] Add GitHub API integration for live commit data
+- [ ] Implement contribution heatmap visualization
+- [ ] Create interactive project timeline
+- [ ] Add blog section for developer insights
+- [ ] Implement language statistics charts
+- [ ] Add dark/light theme toggle
+- [ ] Create downloadable portfolio PDF
+- [ ] Add contact form with email integration
+
+---
+
+## 🎨 Key Technologies
+
+**GSAP (GreenSock)**
+- Professional-grade animations
+- Timeline-based sequencing
+- Scroll-triggered effects
+
+**OGL (WebGL)**
+- Lightweight WebGL library
+- 3D graphics and shaders
+- Performance-optimized rendering
+
+**Lottie**
+- JSON-based animations
+- After Effects integration
+- Lightweight file sizes
+
+---
+
+## 👥 Team / Author
+
+* **Name:** DevRanbir
+* **GitHub:** [https://github.com/DevRanbir](https://github.com/DevRanbir)
+* **Portfolio:** [https://devranbir.github.io/](https://devranbir.github.io/)
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License. 
+
+---
+
+## 🙏 Acknowledgments
+
+- Next.js team for the amazing framework
+- GSAP for incredible animation tools
+- Lottie for beautiful animations
+- OGL for lightweight WebGL graphics
+- Vercel for deployment platform
