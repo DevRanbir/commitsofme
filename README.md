@@ -120,7 +120,7 @@ npm run lint
 
 ## 🎥 Demo
 
-* **Live Demo:** Coming soon
+* **Live Demo:** [https://commitsofme.appwrite.network](https://commitsofme.appwrite.network)
 * **Features:**
   - Animated commit history timeline
   - Interactive 3D project showcases
