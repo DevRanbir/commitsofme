@@ -84,8 +84,8 @@ const Footer = () => {
                                     <TextRoll className="flex min-w-fit">{link.name}</TextRoll>
                                 </a>
                             ))}
-                            <a href="#" className="mt-2 text-primary text-[1.2vw] md:text-lg font-bold uppercase tracking-wider flex items-center gap-1 hover:brightness-110">
-                                <TextRoll className="flex min-w-fit">STORE</TextRoll>
+                            <a onClick={() => window.location.reload()} className="mt-2 text-primary text-[1.2vw] md:text-lg font-bold uppercase tracking-wider flex items-center gap-1 hover:brightness-110">
+                                <TextRoll className="flex min-w-fit">REFRESH</TextRoll>
                             </a>
                         </div>
 

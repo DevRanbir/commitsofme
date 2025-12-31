@@ -116,7 +116,7 @@ export default function Projects() {
                 <div className="absolute top-[20%] left-1/2 -translate-x-1/2 flex flex-col items-center z-10 pointer-events-none">
                     <span className="font-bold text-primary text-3xl mb-2 font-mono">Projects</span>
                     <span className="text-[10px] md:text-xs tracking-[0.2em] font-bold uppercase text-muted-foreground/80">
-                        Selected Work
+                        Showcasing Project Work
                     </span>
                 </div>
 
@@ -131,7 +131,7 @@ export default function Projects() {
                 <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none z-0 opacity-20 select-none">
                     <div className="w-full rotate-[-5deg] scale-110">
                         <ScrollVelocity
-                            texts={["FULL STACK DEV", "VIBECODER"]}
+                            texts={["Fantastic","PROJECTS"]}
                             velocity={50}
                             className="text-[12vw] md:text-[14vw] font-black uppercase text-foreground/40 leading-none py-4"
                         />

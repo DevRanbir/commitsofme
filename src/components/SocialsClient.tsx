@@ -202,15 +202,15 @@ export default function SocialsClient({ data, githubProfile }: SocialsClientProp
                             initial={{ width: 0, opacity: 0 }}
                             animate={{
                                 width: isNameHovered ? "auto" : 0,
-                                opacity: isNameHovered ? 1 : 0,
+                                opacity: isNameHovered ? 1 : 0
                             }}
-                            className="overflow-hidden whitespace-nowrap"
+                            className="overflow-hidden whitespace-nowrap flex flex-col items-start leading-none"
                         >
-                            <span className="font-bold tracking-tighter uppercase font-mono text-[1.5rem] md:text-[2rem] leading-none text-foreground">
-                                Ranbir Khurana
-                            </span>
+                            <span className="font-bold tracking-tighter uppercase font-mono text-lg md:text-xl">Ranbir</span>
+                            <span className="font-bold tracking-tighter uppercase font-mono text-lg md:text-xl text-primary">Khurana</span>
                         </motion.div>
                     </div>
+                    
                     <div className="pointer-events-auto">
                         <Toolbar items={socialsToolbarItems} />
                     </div>
