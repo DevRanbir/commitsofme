@@ -5,6 +5,8 @@ import LogoLoop, { LogoItem } from './LogoLoop';
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import { Signature } from './Signature';
+import { TextRoll } from './TextRoll';
+import { BlockRevealText } from './BlockRevealText';
 
 const partnerLogos: LogoItem[] = [
     { src: "https://skillicons.dev/icons?i=react&theme=dark", alt: "React", href: "https://react.dev" },
@@ -69,7 +71,9 @@ const Footer = () => {
                     <div className="grid grid-cols-3 gap-2 md:gap-8 items-center w-full flex-grow">
                         {/* Left: Navigation */}
                         <div className="flex flex-col items-start gap-1 md:gap-2">
-                            <p className="text-white/60 text-[0.6rem] md:text-[10px] tracking-widest uppercase mb-1">PAGES</p>
+                            <BlockRevealText delay={0.1}>
+                                <p className="text-white/60 text-[0.6rem] md:text-[10px] tracking-widest uppercase mb-1">PAGES</p>
+                            </BlockRevealText>
                             {[
                                 { name: "HOME", href: "/" },
                                 { name: "PROJECTS", href: "/projects" },
@@ -77,11 +81,11 @@ const Footer = () => {
                                 { name: "ABOUT", href: "/about" }
                             ].map((link) => (
                                 <a key={link.name} href={link.href} className="text-[1.8vw] md:text-4xl font-extrabold uppercase tracking-tight hover:text-primary transition-colors duration-300">
-                                    {link.name}
+                                    <TextRoll className="flex min-w-fit">{link.name}</TextRoll>
                                 </a>
                             ))}
                             <a href="#" className="mt-2 text-primary text-[1.2vw] md:text-lg font-bold uppercase tracking-wider flex items-center gap-1 hover:brightness-110">
-                                STORE
+                                <TextRoll className="flex min-w-fit">STORE</TextRoll>
                             </a>
                         </div>
 
@@ -90,8 +94,12 @@ const Footer = () => {
                             <div className="relative flex flex-col items-center justify-center mb-8 md:mb-46">
                                 {/* The Text Background */}
                                 <div className="flex flex-col items-center leading-[0.85] pointer-events-none select-none">
-                                    <span className="text-[4vw] md:text-[90px] font-black text-white/10 tracking-tighter uppercase whitespace-nowrap">ALWAYS BRINGING</span>
-                                    <span className="text-[4vw] md:text-[90px] font-black text-white/10 tracking-tighter uppercase whitespace-nowrap">THE GOODNESS</span>
+                                    <BlockRevealText delay={0.2} className="text-[4vw] md:text-[90px] font-black text-white/10 tracking-tighter uppercase whitespace-nowrap">
+                                        ALWAYS BRINGING
+                                    </BlockRevealText>
+                                    <BlockRevealText delay={0.4} className="text-[4vw] md:text-[90px] font-black text-white/10 tracking-tighter uppercase whitespace-nowrap">
+                                        THE GOODNESS
+                                    </BlockRevealText>
                                 </div>
 
                                 {/* The Signature Overlay */}
@@ -102,7 +110,7 @@ const Footer = () => {
 
                             <div className="z-20 mt-[-5px] md:mt-[-10px]">
                                 <button className="bg-primary text-black font-extrabold uppercase px-3 py-1 md:px-6 md:py-2 text-[1.2vw] md:text-base rounded-full flex items-center gap-1 md:gap-2 hover:scale-105 transition-transform whitespace-nowrap">
-                                    BUSINESS ENQUIRIES
+                                    <TextRoll className="flex min-w-fit">BUSINESS ENQUIRIES</TextRoll>
                                     <ArrowUpRight size={18} className="w-[1.5vw] h-[1.5vw] md:w-[18px] md:h-[18px]" strokeWidth={3} />
                                 </button>
                             </div>
@@ -110,10 +118,12 @@ const Footer = () => {
 
                         {/* Right: Socials */}
                         <div className="flex flex-col items-end gap-1 md:gap-2">
-                            <p className="text-white/60 text-[0.6rem] md:text-[10px] tracking-widest uppercase mb-1">FOLLOW ON</p>
+                            <BlockRevealText delay={0.1}>
+                                <p className="text-white/60 text-[0.6rem] md:text-[10px] tracking-widest uppercase mb-1">FOLLOW ON</p>
+                            </BlockRevealText>
                             {["GITHUB", "INSTAGRAM", "LINKEDIN", "DISCORD"].map((link) => (
                                 <a key={link} href="#" className="text-[1.8vw] md:text-4xl font-extrabold uppercase tracking-tight hover:text-primary transition-colors duration-300">
-                                    {link}
+                                    <TextRoll className="flex min-w-fit">{link}</TextRoll>
                                 </a>
                             ))}
                         </div>
@@ -142,13 +152,17 @@ const Footer = () => {
             <div className="absolute bottom-1 w-full px-4 md:px-12 flex flex-row justify-between items-center gap-4 text-muted-foreground text-[10px] font-bold uppercase tracking-wider z-50">
                 {/* Social Logs */}
                 <div className="flex items-center gap-1 opacity-60">
-                    <span>© 2025 ALL RIGHTS RESERVED</span>
+                    <BlockRevealText>
+                        <span>© 2025 ALL RIGHTS RESERVED</span>
+                    </BlockRevealText>
                 </div>
 
                 {/* Credit */}
                 <div className="flex items-center gap-1 opacity-60">
-                    <span className="opacity-80">Made By</span>
-                    <span className="font-black">DevRanbir</span>
+                    <BlockRevealText className="flex gap-1" delay={0.2}>
+                        <span className="opacity-80">Made By</span>
+                        <span className="font-black">DevRanbir</span>
+                    </BlockRevealText>
                 </div>
             </div>
         </div>

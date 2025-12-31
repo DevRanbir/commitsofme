@@ -22,24 +22,44 @@ const defaultHelmetItems: Item[] = [
     },
 ];
 
-export const HelmetGallery = () => {
+import { ProjectItem } from '../actions/github'; // Assuming I can export this or redefine
+
+interface HelmetGalleryProps {
+    projects?: any[]; // avoiding strict type import for now to prevent circular deps if action is server
+}
+
+export const HelmetGallery = ({ projects }: HelmetGalleryProps) => {
     const [items, setItems] = useState<Item[]>(defaultHelmetItems);
 
     useEffect(() => {
-        async function loadRepos() {
-            try {
-                // Fetch projects largely cached on server
-                const projects = await getLatestProjects("devRanbir", 6);
-                if (projects.length > 0) {
-                    setItems(projects);
+        if (projects && projects.length > 0) {
+            // Map external projects to Masonry Item format
+            const mappedItems: Item[] = projects.map((p, i) => ({
+                id: String(i),
+                img: p.image,
+                title: p.title,
+                year: '2025', // Default or extract from data if available
+                height: i % 2 === 0 ? 480 : 400, // Staggered heights
+                description: p.description,
+                url: p.link, // Store repo link in url
+                demoUrl: p.demo_link // Store demo link
+            }));
+            setItems(mappedItems);
+        } else {
+            // Fallback to internal fetch if no projects provided
+            async function loadRepos() {
+                try {
+                    const fetchedProjects = await getLatestProjects("devRanbir", 6);
+                    if (fetchedProjects.length > 0) {
+                        setItems(fetchedProjects);
+                    }
+                } catch (error) {
+                    console.error("Failed to load GitHub projects:", error);
                 }
-            } catch (error) {
-                console.error("Failed to load GitHub projects:", error);
             }
+            loadRepos();
         }
-
-        loadRepos();
-    }, []);
+    }, [projects]);
 
     return (
         <Masonry
@@ -50,8 +70,8 @@ export const HelmetGallery = () => {
                     title={item.title || ""}
                     year={item.year || ""}
                     description={item.description}
-                    repoUrl={`https://github.com/${item.id}`} // item.id holds "username/repo"
-                    demoUrl={item.url}
+                    repoUrl={item.url} // Use the actual mapped URL (GitHub link)
+                    demoUrl={item.demoUrl} // Use the actual demo URL
                 />
             )}
             ease="power3.out"

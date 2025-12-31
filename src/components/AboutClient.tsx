@@ -5,6 +5,8 @@ import { Signature } from "@/components/Signature";
 import Toolbar from "@/components/Toolbar";
 import Footer from '@/components/Footer';
 import { PortfolioData } from "@/lib/data";
+import { BlockRevealText } from "./BlockRevealText";
+import { LineRevealText } from "./LineRevealText";
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 
@@ -82,10 +84,20 @@ export default function AboutClient({ data }: AboutClientProps) {
                 <div className="max-w-4xl w-full space-y-16">
                     {aboutItems.map((item, idx) => (
                         <div key={idx} className="flex flex-col md:flex-row gap-8 items-start">
-                            <h2 className="text-3xl md:text-5xl font-serif italic text-primary shrink-0 w-full md:w-1/3 text-left md:text-right">{item.title}</h2>
-                            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed w-full md:w-2/3">
-                                {item.description}
-                            </p>
+                            <h2 className="text-3xl md:text-5xl font-serif italic text-primary shrink-0 w-full md:w-1/3 text-left md:text-right flex flex-wrap justify-start md:justify-end">
+                                {item.title.split(" ").map((word, i) => (
+                                    <BlockRevealText key={i} delay={i * 0.1} blockClassName="bg-primary" className="mr-[0.25em]">
+                                        {word}
+                                    </BlockRevealText>
+                                ))}
+                            </h2>
+                            <div className="text-lg md:text-xl text-muted-foreground leading-relaxed w-full md:w-2/3">
+                                <LineRevealText>
+                                    {item.description.split(" ").map((word, i) => (
+                                        <span key={i} className="inline-block mr-[0.25em]">{word}</span>
+                                    ))}
+                                </LineRevealText>
+                            </div>
                         </div>
                     ))}
                     {aboutItems.length === 0 && (

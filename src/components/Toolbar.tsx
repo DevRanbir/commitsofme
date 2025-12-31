@@ -12,8 +12,11 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { TextRoll } from "./TextRoll";
 
-interface ToolbarItem {
+// ... imports ...
+
+export interface ToolbarItem {
     id: string;
     title: string;
     icon: LucideIcon;
@@ -24,7 +27,15 @@ interface ToolbarProps {
     className?: string;
     activeColor?: string;
     onSearch?: (value: string) => void;
+    items?: ToolbarItem[];
 }
+
+const defaultItems: ToolbarItem[] = [
+    { id: "home", title: "Home", icon: Home },
+    { id: "highlights", title: "Highlights", icon: Sparkles },
+    { id: "projects", title: "Projects", icon: Briefcase },
+    { id: "socials", title: "Socials", icon: Share2 },
+];
 
 const buttonVariants = {
     initial: {
@@ -45,45 +56,17 @@ const spanVariants = {
     exit: { width: 0, opacity: 0 },
 };
 
-const notificationVariants = {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: -10 },
-    exit: { opacity: 0, y: -20 },
-};
-
-const lineVariants = {
-    initial: { scaleX: 0, x: "-50%" },
-    animate: {
-        scaleX: 1,
-        x: "0%",
-        transition: { duration: 0.2, ease: "easeOut" },
-    },
-    exit: {
-        scaleX: 0,
-        x: "50%",
-        transition: { duration: 0.2, ease: "easeIn" },
-    },
-};
-
 const transition = { type: "spring", bounce: 0, duration: 0.4 };
 
 export function Toolbar({
     className,
     activeColor = "text-primary",
+    items = defaultItems,
 }: ToolbarProps) {
-    const [selected, setSelected] = React.useState<string | null>("home");
+    const [selected, setSelected] = React.useState<string | null>(items[0]?.id || "home");
     const [isDark, setIsDark] = React.useState(true);
-    const [activeNotification, setActiveNotification] = React.useState<
-        string | null
-    >(null);
+    const [activeNotification, setActiveNotification] = React.useState<string | null>(null);
     const outsideClickRef = React.useRef(null);
-
-    const toolbarItems: ToolbarItem[] = [
-        { id: "home", title: "Home", icon: Home },
-        { id: "highlights", title: "Highlights", icon: Sparkles },
-        { id: "projects", title: "Projects", icon: Briefcase },
-        { id: "socials", title: "Socials", icon: Share2 },
-    ];
 
     const handleItemClick = (itemId: string) => {
         setSelected(itemId);
@@ -98,7 +81,7 @@ export function Toolbar({
 
     React.useEffect(() => {
         const handleScroll = () => {
-            const sections = toolbarItems.map(item => document.getElementById(item.id));
+            const sections = items.map(item => document.getElementById(item.id));
             const scrollPosition = window.scrollY + window.innerHeight / 3;
 
             for (const section of sections) {
@@ -117,7 +100,7 @@ export function Toolbar({
         window.addEventListener('scroll', handleScroll);
 
         // Initial theme check
-        if (document.documentElement.classList.contains('dark')) {
+        if (typeof document !== 'undefined' && document.documentElement.classList.contains('dark')) {
             setIsDark(true);
         }
 
@@ -125,7 +108,7 @@ export function Toolbar({
         handleScroll();
 
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [items]);
 
     const toggleTheme = () => {
         const newTheme = !isDark;
@@ -165,7 +148,7 @@ export function Toolbar({
             >
 
                 <div className="flex items-center gap-2">
-                    {toolbarItems.map((item) => (
+                    {items.map((item) => (
                         <motion.button
                             animate="animate"
                             className={cn(
@@ -196,7 +179,7 @@ export function Toolbar({
                                         transition={transition as any}
                                         variants={spanVariants as any}
                                     >
-                                        {item.title}
+                                        <TextRoll className="flex min-w-fit">{item.title}</TextRoll>
                                     </motion.span>
                                 )}
                             </AnimatePresence>
@@ -233,7 +216,7 @@ export function Toolbar({
                             <Sun className="h-3.5 w-3.5" />
                         )}
                         <span className="font-medium text-sm">
-                            {isDark ? "Dark" : "Light"}
+                            <TextRoll className="flex min-w-fit">{isDark ? "Dark" : "Light"}</TextRoll>
                         </span>
                     </motion.button>
                 </div>

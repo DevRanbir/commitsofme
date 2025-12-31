@@ -7,6 +7,9 @@ import Image from "next/image";
 import { Signature } from "@/components/Signature";
 import { ArrowRight } from "lucide-react";
 import { PortfolioData } from "@/lib/data";
+import { TextRoll } from "./TextRoll";
+import { BlockRevealText } from "./BlockRevealText";
+import { LineRevealText } from "./LineRevealText";
 
 type CardType = {
     id: number;
@@ -70,7 +73,7 @@ const GalleryCard = ({ card }: { card: CardType }) => {
             className={`relative flex-shrink-0 group ${card.width} ${card.height} ${card.rotation} ${card.alignment} transition-transform duration-500 hover:scale-[1.02] hover:z-20`}
         >
             <div className="absolute -top-8 left-0 text-[10px] md:text-xs font-bold tracking-widest uppercase text-muted-foreground/80">
-                {card.title}
+                <BlockRevealText>{card.title}</BlockRevealText>
             </div>
 
             <div className="relative w-full h-full overflow-hidden bg-muted/5 dark:bg-card/5 backdrop-blur-sm border border-white/10 p-2 md:p-3 flex flex-col">
@@ -89,15 +92,17 @@ const GalleryCard = ({ card }: { card: CardType }) => {
                         <div>
                             {card.subtitle && (
                                 <h3 className="text-2xl md:text-4xl font-serif leading-tight text-foreground">
-                                    {card.subtitle.split(" ").map((word, i) =>
-                                        word.toLowerCase() === "where" || word.toLowerCase() === "how" ? (
-                                            <span key={i} className="font-bold italic text-primary">
-                                                {word}{" "}
-                                            </span>
-                                        ) : (
-                                            <span key={i}>{word} </span>
-                                        )
-                                    )}
+                                    <LineRevealText>
+                                        {card.subtitle.split(" ").map((word, i) => (
+                                            word.toLowerCase() === "where" || word.toLowerCase() === "how" ? (
+                                                <span key={i} className="font-bold italic text-primary">
+                                                    {word}
+                                                </span>
+                                            ) : (
+                                                <span key={i} className="text-foreground">{word}</span>
+                                            )
+                                        ))}
+                                    </LineRevealText>
                                 </h3>
                             )}
                             {card.content}
@@ -109,7 +114,7 @@ const GalleryCard = ({ card }: { card: CardType }) => {
                                     key={idx}
                                     className="flex items-center gap-2 px-5 py-2 rounded-full border border-foreground/20 text-xs font-bold uppercase hover:bg-foreground hover:text-background transition-colors"
                                 >
-                                    {btn}
+                                    <TextRoll className="flex min-w-fit">{btn}</TextRoll>
                                     {idx === 0 && <ArrowRight size={12} />}
                                 </button>
                             ))}
@@ -132,7 +137,9 @@ const GalleryCard = ({ card }: { card: CardType }) => {
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-md rounded-full text-foreground hover:text-primary transition-all duration-300 shadow-lg hover:shadow-primary/20 hover:scale-105"
                     >
-                        <span className="text-[10px] font-bold uppercase tracking-widest">{linkLabel}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">
+                            <TextRoll className="flex min-w-fit">{linkLabel}</TextRoll>
+                        </span>
                         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 14v4.833A1.166 1.166 0 0 1 16.833 20H5.167A1.167 1.167 0 0 1 4 18.833V7.167A1.166 1.166 0 0 1 5.167 6h4.618m4.447-2H20v5.768m-7.889 2.121 7.778-7.778" />
                         </svg>
@@ -222,12 +229,20 @@ export const HorizontalGallery = ({ fetchedData }: { fetchedData?: PortfolioData
                     <motion.div style={{ x }} className="flex gap-12 md:gap-32 pl-[10vw] pr-[10vw] h-full items-center md:items-stretch py-20">
                         {/* Introductory Text Block */}
                         <div className="shrink-0 w-[80vw] md:w-[30vw] flex flex-col justify-center mr-16 self-center">
-                            <h2 className="text-6xl md:text-8xl font-black text-primary uppercase leading-none mb-6">
-                                Limits <br /> Define <br /> <span className="text-foreground">Nothing</span>
+                            <h2 className="text-6xl md:text-8xl font-black text-primary uppercase leading-none mb-6 flex flex-col items-start">
+                                <BlockRevealText delay={0}>Limits</BlockRevealText>
+                                <BlockRevealText delay={0.2}>Define</BlockRevealText>
+                                <BlockRevealText delay={0.4} className="text-foreground" blockClassName="bg-foreground">
+                                    Nothing
+                                </BlockRevealText>
                             </h2>
-                            <p className="text-muted-foreground text-lg md:text-xl max-w-md">
-                                Pushing past barriers and setting new standards on and off the track.
-                            </p>
+                            <div className="text-muted-foreground text-lg md:text-xl max-w-md">
+                                <LineRevealText>
+                                    {"Pushing past barriers and setting new standards on and off the track.".split(" ").map((word, i) => (
+                                        <span key={i} className="inline-block mr-[0.25em]">{word}</span>
+                                    ))}
+                                </LineRevealText>
+                            </div>
                         </div>
 
                         {displayCards.map((card) => (

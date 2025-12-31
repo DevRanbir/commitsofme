@@ -47,6 +47,7 @@ export interface Item {
     title?: string;
     year?: string;
     description?: string;
+    demoUrl?: string;
 }
 
 interface GridItem extends Item {

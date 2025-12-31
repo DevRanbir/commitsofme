@@ -25,6 +25,8 @@ const HelmetCardBorder = ({ className }: { className?: string }) => (
 
 import { FastAverageColor } from 'fast-average-color';
 import { useEffect, useState } from "react";
+import { TextRoll } from "./TextRoll";
+import { LineRevealText } from "./LineRevealText";
 
 export const HelmetCard = ({
     src,
@@ -58,7 +60,10 @@ export const HelmetCard = ({
 
         // Use Next.js image optimization endpoint as a proxy to bypass CORS
         // We request a small width (w=64) for faster color extraction
-        const proxyUrl = `/_next/image?url=${encodeURIComponent(src)}&w=64&q=75`;
+        // If it's already our proxy, use it directly (it handles CORS), though we lose resizing benefit.
+        const proxyUrl = src.startsWith('/api/proxy-image')
+            ? src
+            : `/_next/image?url=${encodeURIComponent(src)}&w=64&q=75`;
 
         fac.getColorAsync(proxyUrl, { algorithm: 'dominant' })
             .then(color => {
@@ -97,7 +102,7 @@ export const HelmetCard = ({
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-primary hover:border-primary transition-all duration-300 group-hover:scale-105"
                     >
-                        <span className="text-[10px] font-bold uppercase tracking-widest">{linkLabel}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest"><TextRoll className="flex min-w-fit">{linkLabel}</TextRoll></span>
                         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 14v4.833A1.166 1.166 0 0 1 16.833 20H5.167A1.167 1.167 0 0 1 4 18.833V7.167A1.166 1.166 0 0 1 5.167 6h4.618m4.447-2H20v5.768m-7.889 2.121 7.778-7.778" />
                         </svg>
@@ -122,7 +127,7 @@ export const HelmetCard = ({
                             src={src}
                             alt={title}
                             fill
-                            // unoptimized prop removed to allow Next.js proxying which fixes CORS for FAC
+                            unoptimized={src.startsWith('/api/proxy-image') || src.includes('picsum.photos')} // Bypass optimization for local proxy to avoid restart requirement
                             className={cn(
                                 "object-cover object-left transition-all duration-700",
                                 isHovered ? "scale-105 blur-[2px] opacity-40" : "scale-100 opacity-100"
@@ -132,24 +137,24 @@ export const HelmetCard = ({
                     </div>
                 </div>
 
-                {/* Curtain Overlay */}
+                {/* Curtain Overlay - Now simpler fade in */}
                 <div
-                    className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 text-center transition-all duration-500 ease-in-out"
-                    style={{
-                        backgroundColor: "rgba(0, 0, 0, 0.9)",
-                        transform: isHovered ? "translateY(0%)" : "translateY(-100%)",
-                        // "Curtain" effect can be simple slide down or a mask. 
-                        // User asked for "U shape". We can use a mask or just border-radius.
-                        // Let's try a slide down with a bottom radius that flattens.
-                        borderBottomLeftRadius: isHovered ? "0" : "50%",
-                        borderBottomRightRadius: isHovered ? "0" : "50%",
-                    }}
+                    className={cn(
+                        "absolute inset-0 z-10 flex flex-col items-center justify-center p-6 text-center transition-opacity duration-300 ease-in-out bg-black/80",
+                        isHovered ? "opacity-100" : "opacity-0"
+                    )}
                 >
-                    <p className="text-white text-sm md:text-base font-medium mb-6 line-clamp-4 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                        {description || "No description available."}
-                    </p>
+                    {isHovered && description && (
+                        <div className="text-white text-sm md:text-base font-medium mb-6 leading-relaxed">
+                            <LineRevealText justify="center" interval={0.05} className="text-white">
+                                {description.split(" ").map((word, i) => (
+                                    <span key={i} className="inline-block mr-[0.25em]">{word}</span>
+                                ))}
+                            </LineRevealText>
+                        </div>
+                    )}
 
-                    <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200">
+                    <div className="flex gap-4">
                         {repoUrl && (
                             <a
                                 href={repoUrl}
@@ -157,7 +162,7 @@ export const HelmetCard = ({
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-1 text-white hover:text-primary transition-colors text-xs font-bold uppercase tracking-widest"
                             >
-                                GitHub
+                                <TextRoll className="flex min-w-fit">GitHub</TextRoll>
                                 <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 14v4.833A1.166 1.166 0 0 1 16.833 20H5.167A1.167 1.167 0 0 1 4 18.833V7.167A1.166 1.166 0 0 1 5.167 6h4.618m4.447-2H20v5.768m-7.889 2.121 7.778-7.778" />
                                 </svg>
@@ -170,7 +175,7 @@ export const HelmetCard = ({
                                 rel="noopener noreferrer"
                                 className="px-4 py-2 bg-transparent border border-white text-white text-xs font-bold uppercase rounded-full hover:bg-white hover:text-black transition-colors"
                             >
-                                Live Demo
+                                <TextRoll className="flex min-w-fit">Live Demo</TextRoll>
                             </a>
                         )}
                     </div>

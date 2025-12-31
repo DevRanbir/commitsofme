@@ -11,6 +11,9 @@ import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { PortfolioData } from "@/lib/data";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
+import { TextRoll } from "./TextRoll";
+import { BlockRevealText } from "./BlockRevealText";
+import { LineRevealText } from "./LineRevealText";
 
 interface HomeClientProps {
     data: PortfolioData[];
@@ -140,28 +143,35 @@ export default function HomeClient({ data }: HomeClientProps) {
 
             <section id="projects" className="min-h-screen bg-background py-12 relative z-10 px-4 md:px-12">
                 <div className="max-w-[1600px] mx-auto mb-16 px-4">
-                    <h2 className="text-5xl md:text-7xl font-black uppercase text-foreground mb-4 leading-[0.9]">
-                        Projects <br /> <span className="text-primary font-serif italic tracking-tighter">Hall of Projects</span>
+                    <h2 className="text-5xl md:text-7xl font-black uppercase text-foreground mb-4 leading-[0.9] flex flex-col items-start gap-2">
+                        <BlockRevealText>Projects</BlockRevealText>
+                        <BlockRevealText className="text-primary font-serif italic tracking-tighter" blockClassName="bg-primary">
+                            Hall of Projects
+                        </BlockRevealText>
                     </h2>
-                    <p className="text-muted-foreground max-w-xl text-lg mt-6">
-                        From the iconic blobs to innovative one-off designs, i have always been passionate about designing innovative and memorable projects.
-                    </p>
+                    <div className="text-muted-foreground max-w-xl text-lg mt-6">
+                        <LineRevealText>
+                            {"From the iconic blobs to innovative one-off designs, i have always been passionate about designing innovative and memorable projects.".split(" ").map((word, i) => (
+                                <span key={i} className="inline-block mr-[0.25em]">{word}</span>
+                            ))}
+                        </LineRevealText>
+                    </div>
                 </div>
 
                 <HelmetGallery />
 
                 {/* Call to Action Section */}
-                <div className="w-full flex flex-col items-center justify-center pt-8 pb-20 text-center space-y-6">
-                    <h2 className="text-3xl md:text-4xl font-serif text-foreground leading-tight italic">
-                        See more projects and highlights <br />
-                        from me on the projects page
+                <div className="w-full flex flex-col items-center justify-center pt-8 pb-20 text-center space-y-2">
+                    <h2 className="text-3xl md:text-4xl font-serif text-foreground leading-tight italic flex flex-col items-center gap-1">
+                        <BlockRevealText delay={0}>See more projects and highlights</BlockRevealText>
+                        <BlockRevealText delay={0.2}>from me on the projects page</BlockRevealText>
                     </h2>
 
                     <a
                         href="#"
                         className="group flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-bold uppercase tracking-wide rounded-[var(--radius)] text-sm hover:bg-primary/90 transition-colors"
                     >
-                        View Projects
+                        <TextRoll className="flex min-w-fit">View Projects</TextRoll>
                         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </a>
                 </div>

@@ -68,7 +68,17 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'avatars.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
       }
+    ],
+    localPatterns: [
+      {
+        pathname: '/api/proxy-image',
+        search: '?*',
+      },
     ],
   },
 
