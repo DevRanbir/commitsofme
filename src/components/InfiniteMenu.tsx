@@ -527,7 +527,8 @@ class ArcballControl {
             }
         });
 
-        canvas.style.touchAction = 'none';
+        // Allow vertical scrolling on mobile, but capture horizontal for potential rotation
+        canvas.style.touchAction = 'pan-y';
     }
 
     public update(deltaTime: number, targetFrameDuration = 16): void {

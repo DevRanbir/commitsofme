@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { Signature } from './Signature';
 import { TextRoll } from './TextRoll';
 import { BlockRevealText } from './BlockRevealText';
+import { getGithubProfile, GithubProfile } from '@/actions/github';
+import { useState, useEffect, useMemo } from 'react';
 
 const partnerLogos: LogoItem[] = [
     { src: "https://skillicons.dev/icons?i=react&theme=dark", alt: "React", href: "https://react.dev" },
@@ -31,141 +33,251 @@ const partnerLogos: LogoItem[] = [
 ];
 
 const Footer = () => {
+    const [profile, setProfile] = useState<GithubProfile | null>(null);
+
+    useEffect(() => {
+        getGithubProfile().then(setProfile);
+    }, []);
+
+    const socialLinks = useMemo(() => {
+        if (!profile) return [{ name: "GITHUB", href: "https://github.com" }];
+
+        const links = [
+            { name: "GITHUB", href: `https://github.com/${profile.login}` }
+        ];
+
+        if (profile.social_accounts) {
+            profile.social_accounts.forEach(acc => {
+                let name = acc.provider.toUpperCase();
+                if (name === 'GENERIC' && acc.url.toLowerCase().includes('discord')) {
+                    name = 'DISCORD';
+                }
+                links.push({ name: name, href: acc.url });
+            });
+        }
+
+        return links;
+    }, [profile]);
+
+    const emailHref = profile?.email ? `mailto:${profile.email}` : "#";
+
     return (
-        <div className="relative w-full flex flex-col items-center mt-0 mb-2">
-            <div
-                className="relative w-[97%] aspect-[1.88] flex flex-col text-white overflow-hidden"
-                style={{
-                    maskImage: "url(/footermask.svg)",
-                    WebkitMaskImage: "url(/footermask.svg)",
-                    maskSize: "100% 100%",
-                    WebkitMaskSize: "100% 100%",
-                    maskRepeat: "no-repeat",
-                    WebkitMaskRepeat: "no-repeat"
-                }}
-            >
-                {/* Layer 1: Main Dark Background */}
-                <div className="absolute inset-0 z-0 bg-[#1A1C1A]">
-                    <div
-                        className="absolute inset-0 bg-primary opacity-[0.1]"
+        <>
+            {/* Desktop View (Unchanged) */}
+            <div className="hidden md:flex relative w-full flex-col items-center mt-0 mb-2">
+                <div
+                    className="relative w-[97%] aspect-[1.88] flex flex-col text-white overflow-hidden"
+                    style={{
+                        maskImage: "url(/footermask.svg)",
+                        WebkitMaskImage: "url(/footermask.svg)",
+                        maskSize: "100% 100%",
+                        WebkitMaskSize: "100% 100%",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskRepeat: "no-repeat"
+                    }}
+                >
+                    {/* Layer 1: Main Dark Background */}
+                    <div className="absolute inset-0 z-0 bg-[#1A1C1A]">
+                        <div
+                            className="absolute inset-0 bg-primary opacity-[0.1]"
+                            style={{
+                                maskImage: "url(/background_footer.svg)",
+                                WebkitMaskImage: "url(/background_footer.svg)",
+                                maskPosition: "center",
+                                WebkitMaskPosition: "center",
+                                maskSize: "cover",
+                                WebkitMaskSize: "cover",
+                                maskRepeat: "no-repeat",
+                                WebkitMaskRepeat: "no-repeat"
+                            }}
+                        />
+                    </div>
+
+                    {/* Layer 2: Bottom Yellow Bar Background */}
+                    <div className="absolute bottom-0 left-0 right-0 h-[12%] bg-primary z-0" />
+
+                    {/* Layer 3: Main Content */}
+                    <div className="relative z-10 w-full h-full flex flex-col justify-between pt-[12%] pb-2 px-1 md:px-12">
+
+                        {/* Top Section: Nav, Hero, Socials */}
+                        <div className="grid grid-cols-3 gap-2 md:gap-8 items-center w-full flex-grow">
+                            {/* Left: Navigation */}
+                            <div className="flex flex-col items-start gap-1 md:gap-2">
+                                <BlockRevealText delay={0.1}>
+                                    <p className="text-white/60 text-[0.6rem] md:text-[10px] tracking-widest uppercase mb-1">PAGES</p>
+                                </BlockRevealText>
+                                {[
+                                    { name: "HOME", href: "/" },
+                                    { name: "PROJECTS", href: "/projects" },
+                                    { name: "SOCIALS", href: "/socials" },
+                                    { name: "ABOUT", href: "/about" }
+                                ].map((link) => (
+                                    <a key={link.name} href={link.href} className="text-[1.8vw] md:text-4xl font-extrabold uppercase tracking-tight hover:text-primary transition-colors duration-300">
+                                        <TextRoll className="flex min-w-fit">{link.name}</TextRoll>
+                                    </a>
+                                ))}
+                                <a onClick={() => window.location.reload()} className="mt-2 text-primary text-[1.2vw] md:text-lg font-bold uppercase tracking-wider flex items-center gap-1 hover:brightness-110">
+                                    <TextRoll className="flex min-w-fit">REFRESH</TextRoll>
+                                </a>
+                            </div>
+
+                            {/* Center: Hero Visual */}
+                            <div className="relative flex flex-col items-center justify-center p-0 md:p-4">
+                                <div className="relative flex flex-col items-center justify-center mb-8 md:mb-46">
+                                    {/* The Text Background */}
+                                    <div className="flex flex-col items-center leading-[0.85] pointer-events-none select-none">
+                                        <BlockRevealText delay={0.2} className="text-[4vw] md:text-[90px] font-black text-white/10 tracking-tighter uppercase whitespace-nowrap">
+                                            ALWAYS BRINGING
+                                        </BlockRevealText>
+                                        <BlockRevealText delay={0.4} className="text-[4vw] md:text-[90px] font-black text-white/10 tracking-tighter uppercase whitespace-nowrap">
+                                            THE GOODNESS
+                                        </BlockRevealText>
+                                    </div>
+
+                                    {/* The Signature Overlay */}
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[110%] z-10">
+                                        <Signature className="w-[12vw] md:w-[400px] text-white -rotate-5 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" />
+                                    </div>
+                                </div>
+
+                                <div className="z-20 mt-[-5px] md:mt-[-10px]">
+                                    <a
+                                        href={emailHref}
+                                        className="bg-primary text-black font-extrabold uppercase px-3 py-1 md:px-6 md:py-2 text-[1.2vw] md:text-base rounded-full flex items-center gap-1 md:gap-2 hover:scale-105 transition-transform whitespace-nowrap"
+                                    >
+                                        <TextRoll className="flex min-w-fit">BUSINESS ENQUIRIES</TextRoll>
+                                        <ArrowUpRight size={18} className="w-[1.5vw] h-[1.5vw] md:w-[18px] md:h-[18px]" strokeWidth={3} />
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Right: Socials */}
+                            <div className="flex flex-col items-end gap-1 md:gap-2">
+                                <BlockRevealText delay={0.1}>
+                                    <p className="text-white/60 text-[0.6rem] md:text-[10px] tracking-widest uppercase mb-1">FOLLOW ON</p>
+                                </BlockRevealText>
+                                {socialLinks.map((link) => (
+                                    <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="text-[1.8vw] md:text-4xl font-extrabold uppercase tracking-tight hover:text-primary transition-colors duration-300">
+                                        <TextRoll className="flex min-w-fit">{link.name}</TextRoll>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Middle: Partner Logos - ABSOLUTELY POSITIONED IN THE ORANGE BAR AREA */}
+                        <div className="absolute bottom-4 left-0 w-full h-[12%] flex items-center justify-center opacity-80 overflow-hidden mix-blend-multiply pointer-events-none">
+                            <div className="w-[120%] ml-[-10%]">
+                                {/* Wider width to ensure loop covers edges if mask curves */}
+                                <LogoLoop
+                                    logos={partnerLogos}
+                                    speed={50}
+                                    direction="left"
+                                    logoHeight={24}
+                                    gap={40}
+                                    hoverSpeed={20}
+                                    scaleOnHover
+                                    className="grayscale hover:grayscale-0 transition-all duration-500"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Bar: Positioned in whitespace */}
+                <div className="absolute bottom-1 w-full px-4 md:px-12 flex flex-row justify-between items-center gap-4 text-muted-foreground text-[10px] font-bold uppercase tracking-wider z-50">
+                    {/* Social Logs */}
+                    <div className="flex items-center gap-1 opacity-60">
+                        <BlockRevealText>
+                            <span>© 2025 ALL RIGHTS RESERVED</span>
+                        </BlockRevealText>
+                    </div>
+
+                    {/* Credit */}
+                    <div className="flex items-center gap-1 opacity-60">
+                        <BlockRevealText className="flex gap-1" delay={0.2}>
+                            <span className="opacity-80">Made By</span>
+                            <span className="font-black">DevRanbir</span>
+                        </BlockRevealText>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile View (Newly Remade) */}
+            <div className="flex md:hidden relative w-full bg-[#1A1C1A] text-white overflow-hidden flex-col items-center pt-12 pb-6 rounded-t-[2rem] mt-10">
+                {/* Background Texture similar to Desktop */}
+                <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+                    <div className="absolute inset-0 bg-primary"
                         style={{
                             maskImage: "url(/background_footer.svg)",
                             WebkitMaskImage: "url(/background_footer.svg)",
-                            maskPosition: "center",
-                            WebkitMaskPosition: "center",
                             maskSize: "cover",
-                            WebkitMaskSize: "cover",
-                            maskRepeat: "no-repeat",
-                            WebkitMaskRepeat: "no-repeat"
+                            WebkitMaskSize: "cover"
                         }}
                     />
                 </div>
 
-                {/* Layer 2: Bottom Yellow Bar Background */}
-                <div className="absolute bottom-0 left-0 right-0 h-[12%] bg-primary z-0" />
+                {/* Content Container */}
+                <div className="relative z-10 w-full flex flex-col items-center gap-10 px-6">
 
-                {/* Layer 3: Main Content */}
-                <div className="relative z-10 w-full h-full flex flex-col justify-between pt-[12%] pb-2 px-1 md:px-12">
+                    {/* 1. Header / Signature Area */}
+                    <div className="flex flex-col items-center gap-6">
+                        <Signature className="w-48 text-white -rotate-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]" />
+                        <a
+                            href={emailHref}
+                            className="bg-primary text-black font-extrabold uppercase px-6 py-3 text-sm rounded-full flex items-center gap-2 hover:scale-105 transition-transform shadow-[0_0_20px_rgba(231,138,83,0.4)]"
+                        >
+                            <TextRoll className="flex min-w-fit">Enquiry Mail</TextRoll>
+                            <ArrowUpRight size={18} strokeWidth={3} />
+                        </a>
+                    </div>
 
-                    {/* Top Section: Nav, Hero, Socials */}
-                    <div className="grid grid-cols-3 gap-2 md:gap-8 items-center w-full flex-grow">
-                        {/* Left: Navigation */}
-                        <div className="flex flex-col items-start gap-1 md:gap-2">
-                            <BlockRevealText delay={0.1}>
-                                <p className="text-white/60 text-[0.6rem] md:text-[10px] tracking-widest uppercase mb-1">PAGES</p>
-                            </BlockRevealText>
-                            {[
-                                { name: "HOME", href: "/" },
-                                { name: "PROJECTS", href: "/projects" },
-                                { name: "SOCIALS", href: "/socials" },
-                                { name: "ABOUT", href: "/about" }
-                            ].map((link) => (
-                                <a key={link.name} href={link.href} className="text-[1.8vw] md:text-4xl font-extrabold uppercase tracking-tight hover:text-primary transition-colors duration-300">
-                                    <TextRoll className="flex min-w-fit">{link.name}</TextRoll>
-                                </a>
-                            ))}
-                            <a onClick={() => window.location.reload()} className="mt-2 text-primary text-[1.2vw] md:text-lg font-bold uppercase tracking-wider flex items-center gap-1 hover:brightness-110">
-                                <TextRoll className="flex min-w-fit">REFRESH</TextRoll>
+                    {/* 2. Main Navigation - Vertical & Bold */}
+                    <nav className="flex flex-col items-center gap-4 w-full">
+                        <div className="w-full h-px bg-white/10" /> {/* Divider */}
+                        {[
+                            { name: "HOME", href: "/" },
+                            { name: "PROJECTS", href: "/projects" },
+                            { name: "SOCIALS", href: "/socials" },
+                            { name: "ABOUT", href: "/about" }
+                        ].map((link, i) => (
+                            <a key={link.name} href={link.href} className="text-4xl font-black uppercase tracking-tighter hover:text-primary transition-colors">
+                                <BlockRevealText delay={i * 0.05}>
+                                    {link.name}
+                                </BlockRevealText>
                             </a>
-                        </div>
+                        ))}
+                        <div className="w-full h-px bg-white/10" />
+                    </nav>
 
-                        {/* Center: Hero Visual */}
-                        <div className="relative flex flex-col items-center justify-center p-0 md:p-4">
-                            <div className="relative flex flex-col items-center justify-center mb-8 md:mb-46">
-                                {/* The Text Background */}
-                                <div className="flex flex-col items-center leading-[0.85] pointer-events-none select-none">
-                                    <BlockRevealText delay={0.2} className="text-[4vw] md:text-[90px] font-black text-white/10 tracking-tighter uppercase whitespace-nowrap">
-                                        ALWAYS BRINGING
-                                    </BlockRevealText>
-                                    <BlockRevealText delay={0.4} className="text-[4vw] md:text-[90px] font-black text-white/10 tracking-tighter uppercase whitespace-nowrap">
-                                        THE GOODNESS
-                                    </BlockRevealText>
-                                </div>
-
-                                {/* The Signature Overlay */}
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[110%] z-10">
-                                    <Signature className="w-[12vw] md:w-[400px] text-white -rotate-5 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" />
-                                </div>
-                            </div>
-
-                            <div className="z-20 mt-[-5px] md:mt-[-10px]">
-                                <button className="bg-primary text-black font-extrabold uppercase px-3 py-1 md:px-6 md:py-2 text-[1.2vw] md:text-base rounded-full flex items-center gap-1 md:gap-2 hover:scale-105 transition-transform whitespace-nowrap">
-                                    <TextRoll className="flex min-w-fit">BUSINESS ENQUIRIES</TextRoll>
-                                    <ArrowUpRight size={18} className="w-[1.5vw] h-[1.5vw] md:w-[18px] md:h-[18px]" strokeWidth={3} />
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Right: Socials */}
-                        <div className="flex flex-col items-end gap-1 md:gap-2">
-                            <BlockRevealText delay={0.1}>
-                                <p className="text-white/60 text-[0.6rem] md:text-[10px] tracking-widest uppercase mb-1">FOLLOW ON</p>
-                            </BlockRevealText>
-                            {["GITHUB", "INSTAGRAM", "LINKEDIN", "DISCORD"].map((link) => (
-                                <a key={link} href="#" className="text-[1.8vw] md:text-4xl font-extrabold uppercase tracking-tight hover:text-primary transition-colors duration-300">
-                                    <TextRoll className="flex min-w-fit">{link}</TextRoll>
-                                </a>
-                            ))}
-                        </div>
+                    {/* 3. Socials - Horizontal Row */}
+                    <div className="flex flex-wrap justify-center gap-6">
+                        {socialLinks.map((link) => (
+                            <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="text-xs font-bold uppercase tracking-widest text-white/60 hover:text-primary transition-colors">
+                                {link.name}
+                            </a>
+                        ))}
                     </div>
 
-                    {/* Middle: Partner Logos - ABSOLUTELY POSITIONED IN THE ORANGE BAR AREA */}
-                    <div className="absolute bottom-4 left-0 w-full h-[12%] flex items-center justify-center opacity-80 overflow-hidden mix-blend-multiply pointer-events-none">
-                        <div className="w-[120%] ml-[-10%]">
-                            {/* Wider width to ensure loop covers edges if mask curves */}
-                            <LogoLoop
-                                logos={partnerLogos}
-                                speed={50}
-                                direction="left"
-                                logoHeight={24}
-                                gap={40}
-                                hoverSpeed={20}
-                                scaleOnHover
-                                className="grayscale hover:grayscale-0 transition-all duration-500"
-                            />
-                        </div>
+                    {/* 4. Logo Loop - Yellow Bar Strip */}
+                    <div className="w-[110%] -ml-[5%] h-16 bg-primary/10 border-y border-primary/20 flex items-center justify-center overflow-hidden my-4">
+                        <LogoLoop
+                            logos={partnerLogos}
+                            speed={40}
+                            direction="left"
+                            logoHeight={20}
+                            gap={30}
+                            className="grayscale hover:grayscale-0 opacity-70"
+                        />
+                    </div>
+
+                    {/* 5. Footer Credits */}
+                    <div className="flex flex-col items-center gap-2 text-[10px] font-bold uppercase text-white/30 tracking-widest">
+                        <span>© 2025 DevRanbir</span>
+                        <span>All Rights Reserved</span>
                     </div>
                 </div>
             </div>
-
-            {/* Bottom Bar: Positioned in whitespace */}
-            <div className="absolute bottom-1 w-full px-4 md:px-12 flex flex-row justify-between items-center gap-4 text-muted-foreground text-[10px] font-bold uppercase tracking-wider z-50">
-                {/* Social Logs */}
-                <div className="flex items-center gap-1 opacity-60">
-                    <BlockRevealText>
-                        <span>© 2025 ALL RIGHTS RESERVED</span>
-                    </BlockRevealText>
-                </div>
-
-                {/* Credit */}
-                <div className="flex items-center gap-1 opacity-60">
-                    <BlockRevealText className="flex gap-1" delay={0.2}>
-                        <span className="opacity-80">Made By</span>
-                        <span className="font-black">DevRanbir</span>
-                    </BlockRevealText>
-                </div>
-            </div>
-        </div>
+        </>
     );
 };
 

@@ -74,9 +74,9 @@ export default function Projects() {
         <>
             <div id="home" className="relative min-h-screen w-full overflow-hidden bg-background text-foreground flex flex-col font-sans selection:bg-primary selection:text-primary-foreground">
                 {/* Navbar */}
-                <nav className="fixed -top-5 left-0 right-0 w-full flex justify-between items-start p-6 md:p-8 z-50 pointer-events-none">
+                <nav className="fixed z-50 pointer-events-none flex flex-col justify-between items-center inset-0 md:inset-x-0 md:top-[-1.25rem] md:bottom-auto md:flex-row md:items-start md:p-8">
                     <div
-                        className="pointer-events-auto flex items-center transition-all duration-300 group cursor-pointer gap-4"
+                        className="pointer-events-auto pt-6 md:pt-0 flex items-center transition-all duration-300 group cursor-pointer gap-4"
                         onMouseEnter={() => setIsNameHovered(true)}
                         onMouseLeave={() => setIsNameHovered(false)}
                     >
@@ -107,7 +107,7 @@ export default function Projects() {
                         </motion.div>
                     </div>
 
-                    <div className="pointer-events-auto">
+                    <div className="pointer-events-auto pb-6 md:pb-0">
                         <Toolbar items={projectToolbarItems} />
                     </div>
                 </nav>
@@ -131,7 +131,7 @@ export default function Projects() {
                 <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none z-0 opacity-20 select-none">
                     <div className="w-full rotate-[-5deg] scale-110">
                         <ScrollVelocity
-                            texts={["Fantastic","PROJECTS"]}
+                            texts={["Fantastic", "PROJECTS"]}
                             velocity={50}
                             className="text-[12vw] md:text-[14vw] font-black uppercase text-foreground/40 leading-none py-4"
                         />

@@ -128,19 +128,20 @@
 @media (max-width: 768px) {
   .face-title {
     font-size: 1.5rem;
-    top: 10%;
+    top: 30%;
   }
 
   .face-description {
     display: block;
     /* Show description on mobile now that it matches layout better */
     font-size: 0.875rem;
-    bottom: 10%;
+    bottom: 30%;
     max-width: 90%;
     width: auto;
   }
 
   .action-button.active {
-    bottom: 30%;
+    bottom: 15%;
+    left: 80%; /* Move button to side so it doesn't overlap centered text */
   }
 }
