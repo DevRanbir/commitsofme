@@ -4,7 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { RadialMenu, MenuItem } from "@/components/RadialMenu";
 import {
-    Home, Mail, Github, FolderOpen, User, X
+    Home, Mail, Github, User, X, Briefcase, Share2
 } from "lucide-react";
 
 export default function GlobalRadialMenu({ children }: { children: React.ReactNode }) {
@@ -13,11 +13,11 @@ export default function GlobalRadialMenu({ children }: { children: React.ReactNo
     const radialMenuItems: MenuItem[] = [
         { id: 'close', label: 'Close', icon: X },
         { id: 'github', label: 'GitHub', icon: Github },
-        { id: 'mail', label: 'Mail', icon: Mail },
+        { id: 'mail', label: 'Contact', icon: Mail },
         { id: 'home', label: 'Home', icon: Home },
-        { id: 'projects', label: 'Projects', icon: FolderOpen },
+        { id: 'projects', label: 'Work', icon: Briefcase },
         { id: 'about', label: 'About', icon: User },
-        { id: 'socials', label: 'Socials', icon: User },
+        { id: 'socials', label: 'Socials', icon: Share2 },
     ];
 
     const handleRadialSelect = (item: MenuItem) => {

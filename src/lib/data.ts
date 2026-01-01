@@ -13,7 +13,7 @@ export type PortfolioData = {
 
 export async function fetchPortfolioData(): Promise<PortfolioData[]> {
     try {
-        const response = await fetch(SHEET_URL, { next: { revalidate: 60 } }); // Revalidate every 60s
+        const response = await fetch(SHEET_URL, { next: { revalidate: 0 } }); // Fetch fresh data on every request
         const text = await response.text();
 
         return new Promise((resolve, reject) => {

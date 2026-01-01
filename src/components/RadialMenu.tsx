@@ -206,8 +206,8 @@ export function RadialMenu({
                                                         outerRingInnerRadius,
                                                     )}
                                                     className={cn({
-                                                        'fill-neutral-200 dark:fill-neutral-700': isActive,
-                                                        'fill-neutral-100 dark:fill-neutral-800': !isActive,
+                                                        'fill-zinc-200 dark:fill-zinc-800': isActive,
+                                                        'fill-white dark:fill-zinc-950': !isActive,
                                                     })}
                                                     initial={false}
                                                     transition={wedgeTransition}
@@ -220,11 +220,11 @@ export function RadialMenu({
                                                         wedgeInnerRadius,
                                                     )}
                                                     className={cn(
-                                                        'stroke-neutral-300 dark:stroke-neutral-600 stroke-1',
+                                                        'stroke-zinc-200 dark:stroke-zinc-800 stroke-1',
                                                         {
-                                                            'fill-neutral-200 dark:fill-neutral-700':
+                                                            'fill-zinc-200 dark:fill-zinc-800':
                                                                 isActive,
-                                                            'fill-neutral-100 dark:fill-neutral-800':
+                                                            'fill-white dark:fill-zinc-950':
                                                                 !isActive,
                                                         },
                                                     )}
@@ -249,9 +249,9 @@ export function RadialMenu({
                                                         }}
                                                         aria-label={item.label}
                                                         className={cn(
-                                                            'size-full flex items-center justify-center rounded-full outline-none text-neutral-600 dark:text-neutral-400',
+                                                            'size-full flex items-center justify-center rounded-full outline-none text-zinc-500 dark:text-zinc-400 transition-colors',
                                                             {
-                                                                'text-neutral-900 dark:text-neutral-50':
+                                                                'text-zinc-900 dark:text-zinc-50':
                                                                     isActive,
                                                             },
                                                         )}
@@ -266,19 +266,27 @@ export function RadialMenu({
                                     })}
 
                                     {activeIndex !== null && (
-                                        <foreignObject
-                                            x={-centerRadius}
-                                            y={-centerRadius}
-                                            width={centerRadius * 2}
-                                            height={centerRadius * 2}
-                                            className="pointer-events-none"
-                                        >
-                                            <div className="size-full flex items-center justify-center text-center p-2">
-                                                <span className="text-xs font-semibold text-neutral-900 dark:text-neutral-100 select-none">
-                                                    {menuItems[activeIndex].label}
-                                                </span>
-                                            </div>
-                                        </foreignObject>
+                                        <>
+                                            <circle
+                                                cx={0}
+                                                cy={0}
+                                                r={centerRadius}
+                                                className="fill-zinc-100 dark:fill-zinc-900 transition-colors duration-200"
+                                            />
+                                            <foreignObject
+                                                x={-centerRadius}
+                                                y={-centerRadius}
+                                                width={centerRadius * 2}
+                                                height={centerRadius * 2}
+                                                className="pointer-events-none"
+                                            >
+                                                <div className="size-full flex items-center justify-center text-center p-2">
+                                                    <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 select-none">
+                                                        {menuItems[activeIndex].label}
+                                                    </span>
+                                                </div>
+                                            </foreignObject>
+                                        </>
                                     )}
 
                                     {activeIndex === null && (
@@ -287,13 +295,13 @@ export function RadialMenu({
                                                 cx={0}
                                                 cy={0}
                                                 r={centerRadius}
-                                                className="fill-neutral-100 dark:fill-neutral-950 stroke-1 opacity-50 stroke-neutral-400 dark:stroke-neutral-600 pointer-events-none"
+                                                className="fill-zinc-100 dark:fill-zinc-900 stroke-1 opacity-50 stroke-zinc-200 dark:stroke-zinc-800 pointer-events-none"
                                             />
                                             <circle
                                                 cx={0}
                                                 cy={0}
                                                 r={3}
-                                                className="fill-none stroke-neutral-400 dark:stroke-neutral-600 pointer-events-none"
+                                                className="fill-none stroke-zinc-400 dark:stroke-zinc-600 pointer-events-none"
                                             />
                                         </>
                                     )}

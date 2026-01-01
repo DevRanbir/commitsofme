@@ -99,9 +99,21 @@ export function Toolbar({
 
         window.addEventListener('scroll', handleScroll);
 
-        // Initial theme check
-        if (typeof document !== 'undefined' && document.documentElement.classList.contains('dark')) {
-            setIsDark(true);
+        // Initial theme check & load from cache
+        if (typeof window !== 'undefined') {
+            const cachedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+            // Default to dark if no cache, or if cache says dark
+            const shouldBeDark = cachedTheme === "dark" || (!cachedTheme && prefersDark);
+
+            if (shouldBeDark) {
+                document.documentElement.classList.add('dark');
+                setIsDark(true);
+            } else {
+                document.documentElement.classList.remove('dark');
+                setIsDark(false);
+            }
         }
 
         // Initial scroll check
@@ -113,6 +125,7 @@ export function Toolbar({
     const toggleTheme = () => {
         const newTheme = !isDark;
         setIsDark(newTheme);
+        localStorage.setItem("theme", newTheme ? "dark" : "light");
 
         // @ts-ignore
         if (!document.startViewTransition) {

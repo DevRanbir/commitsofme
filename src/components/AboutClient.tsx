@@ -2,13 +2,26 @@
 
 import { ScrollVelocity } from "@/components/ScrollVelocity";
 import { Signature } from "@/components/Signature";
-import Toolbar from "@/components/Toolbar";
+import Toolbar, { ToolbarItem } from "@/components/Toolbar";
 import Footer from '@/components/Footer';
 import { PortfolioData } from "@/lib/data";
 import { BlockRevealText } from "./BlockRevealText";
 import { LineRevealText } from "./LineRevealText";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
+import dynamic from "next/dynamic";
+import { Loader2, Home, User, Share2 } from "lucide-react";
+import Lottie, { LottieRefCurrentProps } from "lottie-react";
+import Particles from "@/components/Particles";
+
+const ResumeViewer = dynamic(() => import("@/components/ResumeViewer").then(mod => mod.ResumeViewer), {
+    ssr: false,
+    loading: () => (
+        <div className="w-full h-[600px] flex items-center justify-center bg-muted/20 rounded-xl border border-border/50">
+            <Loader2 className="w-10 h-10 animate-spin text-primary opacity-50" />
+        </div>
+    )
+});
 
 interface AboutClientProps {
     data: PortfolioData[];
@@ -17,7 +30,32 @@ interface AboutClientProps {
 export default function AboutClient({ data }: AboutClientProps) {
     const [isCompact, setIsCompact] = useState(false);
 
+    // Lottie State
+    const [lottieData, setLottieData] = useState(null);
+    const [isNameHovered, setIsNameHovered] = useState(false);
+    const lottieRef = useRef<LottieRefCurrentProps>(null);
+
     const aboutItems = data.filter(item => item.section === "About");
+
+    // Toolbar Items for About Page
+    const aboutToolbarItems: ToolbarItem[] = [
+        { id: "home", title: "Top", icon: Home },
+        { id: "content-start", title: "Story", icon: User },
+        { id: "socials-footer", title: "Socials", icon: Share2 },
+    ];
+
+    useEffect(() => {
+        fetch("/liquid%20loader%2001.json")
+            .then(res => res.json())
+            .then(data => setLottieData(data))
+            .catch(err => console.error("Failed to load Lottie:", err));
+    }, []);
+
+    useEffect(() => {
+        if (lottieRef.current) {
+            lottieRef.current.setSpeed(isNameHovered ? 1 : 0.5);
+        }
+    }, [isNameHovered, lottieData]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -42,23 +80,43 @@ export default function AboutClient({ data }: AboutClientProps) {
     return (
         <>
             <div id="home" className="relative min-h-screen w-full overflow-hidden bg-background text-foreground flex flex-col font-sans selection:bg-primary selection:text-primary-foreground">
+                {/* Navbar */}
                 <nav className="fixed -top-5 left-0 right-0 w-full flex justify-between items-start p-6 md:p-8 z-50 pointer-events-none">
-                    <motion.div
-                        layout
-                        className="font-bold tracking-tighter uppercase font-mono pointer-events-auto flex flex-col items-start text-[2rem]"
-                        initial={{ fontSize: "2rem", flexDirection: "column", gap: "0", alignItems: "flex-start" }}
-                        animate={{
-                            fontSize: isCompact ? "1.5rem" : "2rem",
-                            flexDirection: isCompact ? "row" : "column",
-                            gap: isCompact ? "0.5rem" : "0",
-                            alignItems: isCompact ? "center" : "flex-start"
-                        }}
-                        transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1.2 }}
+                    <div
+                        className="pointer-events-auto flex items-center transition-all duration-300 group cursor-pointer gap-4"
+                        onMouseEnter={() => setIsNameHovered(true)}
+                        onMouseLeave={() => setIsNameHovered(false)}
                     >
-                        <motion.span layout>Ranbir</motion.span>
-                        <motion.span layout>Khurana</motion.span>
-                    </motion.div>
-                    <div className="pointer-events-auto"><Toolbar /></div>
+                        <div className="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center shrink-0">
+                            {lottieData && (
+                                <Lottie
+                                    lottieRef={lottieRef}
+                                    animationData={lottieData}
+                                    loop={true}
+                                    className="w-full h-full scale-150"
+                                    onLoadedImages={() => {
+                                        lottieRef.current?.setSpeed(0.2);
+                                    }}
+                                />
+                            )}
+                        </div>
+
+                        <motion.div
+                            initial={{ width: 0, opacity: 0 }}
+                            animate={{
+                                width: isNameHovered ? "auto" : 0,
+                                opacity: isNameHovered ? 1 : 0
+                            }}
+                            className="overflow-hidden whitespace-nowrap flex flex-col items-start leading-none"
+                        >
+                            <span className="font-bold tracking-tighter uppercase font-mono text-lg md:text-xl">Ranbir</span>
+                            <span className="font-bold tracking-tighter uppercase font-mono text-lg md:text-xl text-primary">Khurana</span>
+                        </motion.div>
+                    </div>
+
+                    <div className="pointer-events-auto">
+                        <Toolbar items={aboutToolbarItems} />
+                    </div>
                 </nav>
 
                 <div className="absolute top-[20%] left-1/2 -translate-x-1/2 flex flex-col items-center z-10 pointer-events-none">
@@ -74,14 +132,30 @@ export default function AboutClient({ data }: AboutClientProps) {
 
                 <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none z-0 opacity-20 select-none">
                     <div className="w-full rotate-[-5deg] scale-110">
-                        <ScrollVelocity texts={["FULL STACK DEV", "VIBECODER"]} velocity={50} className="text-[12vw] md:text-[14vw] font-black uppercase text-foreground/40 leading-none py-4" />
+                        <ScrollVelocity texts={["Ranbir", "Khurana"]} velocity={50} className="text-[12vw] md:text-[14vw] font-black uppercase text-foreground/40 leading-none py-4" />
                     </div>
                 </div>
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none z-30"></div>
             </div>
 
-            <section id="content-start" className="min-h-screen bg-background py-20 px-4 md:px-12 flex flex-col items-center">
-                <div className="max-w-4xl w-full space-y-16">
+            <section id="content-start" className="min-h-screen bg-background py-20 px-4 md:px-12 flex flex-col items-center relative">
+                {/* Particles Container - Sticky to cover viewport while scrolling this section */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="sticky top-0 h-screen w-full overflow-hidden">
+                        <Particles
+                            className="w-full h-full"
+                            particleCount={200}
+                            particleSpread={10}
+                            speed={0.1}
+                            particleColors={["#ffffff", "#cccccc"]}
+                            moveParticlesOnHover={true}
+                            alphaParticles={true}
+                            disableRotation={true}
+                        />
+                    </div>
+                </div>
+
+                <div className="max-w-4xl w-full space-y-16 relative z-10">
                     {aboutItems.map((item, idx) => (
                         <div key={idx} className="flex flex-col md:flex-row gap-8 items-start">
                             <h2 className="text-3xl md:text-5xl font-serif italic text-primary shrink-0 w-full md:w-1/3 text-left md:text-right flex flex-wrap justify-start md:justify-end">
@@ -103,6 +177,28 @@ export default function AboutClient({ data }: AboutClientProps) {
                     {aboutItems.length === 0 && (
                         <p className="text-center text-muted-foreground">About section content coming soon...</p>
                     )}
+
+                    {/* Resume Section */}
+                    {(() => {
+                        const resumeItem = data.find(item =>
+                            (item.section?.trim().toLowerCase() === 'resume') ||
+                            (item.title?.trim().toLowerCase() === 'resume')
+                        );
+
+                        if (resumeItem && resumeItem.link) {
+                            return (
+                                <div className="w-full mt-20">
+                                    <h2 className="text-3xl md:text-5xl font-serif italic text-primary text-center mb-12">
+                                        <BlockRevealText delay={0.2}>My Resume</BlockRevealText>
+                                    </h2>
+                                    <ResumeViewer url={resumeItem.link} />
+                                </div>
+                            );
+                        } else {
+                            return null;
+                        }
+                    })()}
+
                 </div>
             </section>
 
