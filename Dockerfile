@@ -1,29 +1,29 @@
+# Install deps
 FROM node:20-alpine AS deps
 WORKDIR /app
-
-# Install dependencies once and cache the layer.
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# Build app
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
+# Run app
 FROM node:20-alpine AS runner
 WORKDIR /app
+
 ENV NODE_ENV=production
 ENV PORT=8080
 
-COPY package.json package-lock.json ./
-COPY --from=deps /app/node_modules ./node_modules
-RUN npm prune --omit=dev
-
-COPY --from=builder /app/.next ./.next
+# Copy standalone output (IMPORTANT)
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.ts ./next.config.ts
 
 EXPOSE 8080
 
-CMD ["npm", "run", "start"]
+# Correct start command
+CMD ["node", "server.js"]

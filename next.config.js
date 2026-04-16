@@ -1,7 +1,6 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+module.exports = {
+  output: 'standalone',
   reactCompiler: true,
   images: {
     remotePatterns: [
@@ -72,7 +71,7 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'picsum.photos',
-      }
+      },
     ],
     localPatterns: [
       {
@@ -81,7 +80,4 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-
 };
-
-export default nextConfig;
