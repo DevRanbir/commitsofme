@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { PortfolioData } from "@/lib/data";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import { TextRoll } from "./TextRoll";
@@ -167,13 +168,13 @@ export default function HomeClient({ data }: HomeClientProps) {
                         <BlockRevealText delay={0.2}>from me on the projects page</BlockRevealText>
                     </h2>
 
-                    <a
-                        href="#"
+                    <Link
+                        href="/projects"
                         className="group flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-bold uppercase tracking-wide rounded-[var(--radius)] text-sm hover:bg-primary/90 transition-colors"
                     >
                         <TextRoll className="flex min-w-fit">View Projects</TextRoll>
                         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                    </a>
+                    </Link>
                 </div>
             </section>
 

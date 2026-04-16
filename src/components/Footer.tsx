@@ -59,7 +59,7 @@ const Footer = () => {
         return links;
     }, [profile]);
 
-    const emailHref = profile?.email ? `mailto:${profile.email}` : "#";
+    const emailHref = profile?.email ? `mailto:${profile.email}` : `mailto:$ranbirkhurana195@gmail.com`;
 
     return (
         <>
