@@ -22,10 +22,14 @@ const defaultHelmetItems: Item[] = [
     },
 ];
 
-import { ProjectItem } from '../actions/github'; // Assuming I can export this or redefine
-
 interface HelmetGalleryProps {
-    projects?: any[]; // avoiding strict type import for now to prevent circular deps if action is server
+    projects?: Array<{
+        image?: string;
+        title?: string;
+        description?: string;
+        link?: string;
+        demo_link?: string | null;
+    }>;
 }
 
 export const HelmetGallery = ({ projects }: HelmetGalleryProps) => {
@@ -33,17 +37,35 @@ export const HelmetGallery = ({ projects }: HelmetGalleryProps) => {
 
     useEffect(() => {
         if (projects && projects.length > 0) {
+            const projectsWithImage = projects.filter((p): p is {
+                image: string;
+                title?: string;
+                description?: string;
+                link?: string;
+                demo_link?: string | null;
+            } => {
+                if (typeof p.image !== 'string') return false;
+                const normalized = p.image.trim().toLowerCase();
+                return normalized.length > 0 && !normalized.includes('placeholder-image');
+            });
+
             // Map external projects to Masonry Item format
-            const mappedItems: Item[] = projects.map((p, i) => ({
-                id: String(i),
-                img: p.image,
-                title: p.title,
-                year: '2025', // Default or extract from data if available
-                height: i % 2 === 0 ? 480 : 400, // Staggered heights
-                description: p.description,
-                url: p.link, // Store repo link in url
-                demoUrl: p.demo_link // Store demo link
-            }));
+            const mappedItems: Item[] = projectsWithImage
+                .map((p, i) => ({
+                    id: String(i),
+                    img: p.image,
+                    title: p.title,
+                    year: '2025', // Default or extract from data if available
+                    height: i % 2 === 0 ? 480 : 400, // Staggered heights
+                    description: p.description,
+                    url: p.link, // Store repo link in url
+                    demoUrl: p.demo_link ?? undefined // Store demo link
+                }));
+
+            if (mappedItems.length === 0) {
+                return;
+            }
+
             setItems(mappedItems);
         } else {
             // Fallback to internal fetch if no projects provided

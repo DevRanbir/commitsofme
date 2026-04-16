@@ -12,8 +12,6 @@ export default function GlobalRadialMenu({ children }: { children: React.ReactNo
 
     const radialMenuItems: MenuItem[] = [
         { id: 'close', label: 'Close', icon: X },
-        { id: 'github', label: 'GitHub', icon: Github },
-        { id: 'mail', label: 'Contact', icon: Mail },
         { id: 'home', label: 'Home', icon: Home },
         { id: 'projects', label: 'Work', icon: Briefcase },
         { id: 'about', label: 'About', icon: User },

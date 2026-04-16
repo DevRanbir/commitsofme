@@ -5,6 +5,58 @@ export interface ProjectItem {
     link: string;
     title: string;
     description: string;
+    demo_link?: string | null;
+}
+
+function isLikelyBadgeOrPlaceholder(url: string): boolean {
+    const lower = url.toLowerCase();
+    return lower.includes('shields.io') ||
+        lower.includes('travis-ci') ||
+        lower.includes('github.com/workflows') ||
+        lower.includes('badge') ||
+        lower.includes('placeholder-image');
+}
+
+async function isValidRemoteImage(url: string): Promise<boolean> {
+    const headers = {
+        'User-Agent': 'Portfolio-App'
+    };
+
+    try {
+        const headResponse = await fetch(url, {
+            method: 'HEAD',
+            headers,
+            next: { revalidate: 3600 }
+        });
+
+        if (headResponse.ok) {
+            const contentType = headResponse.headers.get('Content-Type')?.toLowerCase() ?? '';
+            return contentType.startsWith('image/');
+        }
+
+        if (headResponse.status !== 403 && headResponse.status !== 405) {
+            return false;
+        }
+    } catch {
+        // Fall back to GET when HEAD is blocked by remote host.
+    }
+
+    try {
+        const getResponse = await fetch(url, {
+            method: 'GET',
+            headers,
+            next: { revalidate: 3600 }
+        });
+
+        if (!getResponse.ok) {
+            return false;
+        }
+
+        const contentType = getResponse.headers.get('Content-Type')?.toLowerCase() ?? '';
+        return contentType.startsWith('image/');
+    } catch {
+        return false;
+    }
 }
 
 export async function getGithubProjects(): Promise<ProjectItem[]> {
@@ -43,12 +95,12 @@ export async function getGithubProjects(): Promise<ProjectItem[]> {
 
         // 3. For each repo, try to get an image
         const projects = await Promise.all(
-            repos.map(async (repo: any) => {
+            repos.map(async (repo: any): Promise<ProjectItem | null> => {
                 // Try getting social preview (OG image) first as it's cleaner, then README
                 // Actually, GitHub doesn't expose OG image in API easily without scraping.
                 // Let's try raw README content to find an image.
 
-                let imageUrl = 'https://picsum.photos/600/600?grayscale'; // Fallback
+                let imageUrl: string | null = null;
 
                 try {
                     // Try fetch README
@@ -62,60 +114,61 @@ export async function getGithubProjects(): Promise<ProjectItem[]> {
                         next: { revalidate: 3600 }
                     });
 
-                    if (readmeRes.ok) {
-                        const readmeText = await readmeRes.text();
+                    if (!readmeRes.ok) {
+                        return null;
+                    }
 
-                        // Find all image matches
-                        // Match ![alt](url)
-                        const mdImageRegex = /!\[.*?\]\((.*?)\)/g;
-                        // Match <img ... src="url" ...> handling newlines and other attributes
-                        const htmlImageRegex = /<img\b[^>]*\bsrc\s*=\s*(["'])(.*?)\1/gi;
+                    const readmeText = await readmeRes.text();
 
-                        const candidates: string[] = [];
+                    // Find all image matches
+                    // Match ![alt](url)
+                    const mdImageRegex = /!\[.*?\]\((.*?)\)/g;
+                    // Match <img ... src="url" ...> handling newlines and other attributes
+                    const htmlImageRegex = /<img\b[^>]*\bsrc\s*=\s*(["'])(.*?)\1/gi;
 
-                        let match;
-                        while ((match = mdImageRegex.exec(readmeText)) !== null) {
-                            if (match[1]) candidates.push(match[1]);
+                    const candidates: string[] = [];
+
+                    let match;
+                    while ((match = mdImageRegex.exec(readmeText)) !== null) {
+                        if (match[1]) candidates.push(match[1].trim());
+                    }
+                    while ((match = htmlImageRegex.exec(readmeText)) !== null) {
+                        if (match[2]) candidates.push(match[2].trim());
+                    }
+
+                    for (const candidate of candidates) {
+                        if (!candidate || isLikelyBadgeOrPlaceholder(candidate)) {
+                            continue;
                         }
-                        while ((match = htmlImageRegex.exec(readmeText)) !== null) {
-                            // match[2] corresponds to the 2nd capture group which is the URL
-                            if (match[2]) candidates.push(match[2]);
+
+                        let resolvedUrl = candidate;
+
+                        if (resolvedUrl.startsWith('//')) {
+                            resolvedUrl = `https:${resolvedUrl}`;
+                        } else if (!resolvedUrl.startsWith('http')) {
+                            const cleanPath = resolvedUrl.replace(/^(\.?\/)+/, '');
+                            resolvedUrl = `https://raw.githubusercontent.com/${username}/${repo.name}/${repo.default_branch}/${cleanPath}`;
                         }
 
-                        // Filter out likely badges and find the first "real" image
-                        const validImage = candidates.find(url => {
-                            const lower = url.toLowerCase();
-                            const isBadge = lower.includes('shields.io') ||
-                                lower.includes('travis-ci') ||
-                                lower.includes('badge') ||
-                                lower.includes('github.com/workflows');
-                            return !isBadge;
-                        });
-
-                        if (validImage) {
-                            imageUrl = validImage;
-
-                            // Handle relative paths
-                            if (!imageUrl.startsWith('http')) {
-                                // Remove leading ./ or /
-                                const cleanPath = imageUrl.replace(/^(\.?\/)+/, '');
-                                imageUrl = `https://raw.githubusercontent.com/${username}/${repo.name}/${repo.default_branch}/${cleanPath}`;
-                            }
-
-                            // Fix for CORS issues with GitHub images (both user-attachments and raw content)
-                            // We proxy ALL images found in READMEs to ensure valid CORS headers for the canvas
-                            if (imageUrl) {
-                                // We need to encode it properly
-                                imageUrl = `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`;
-                            }
+                        const isImage = await isValidRemoteImage(resolvedUrl);
+                        if (!isImage) {
+                            continue;
                         }
+
+                        imageUrl = `/api/proxy-image?url=${encodeURIComponent(resolvedUrl)}`;
+                        break;
                     }
                 } catch (e) {
                     console.error(`Error fetching readme for ${repo.name}`, e);
+                    return null;
+                }
+
+                if (!imageUrl) {
+                    return null;
                 }
 
                 return {
-                    image: imageUrl, // Will be the proxied URL or the default fallback
+                    image: imageUrl,
                     link: repo.html_url,
                     title: repo.name,
                     description: repo.description || 'No description provided.',
@@ -124,7 +177,7 @@ export async function getGithubProjects(): Promise<ProjectItem[]> {
             })
         );
 
-        return projects;
+        return projects.filter((project): project is ProjectItem => project !== null);
     } catch (error) {
         console.error('Error fetching GitHub projects:', error);
         return [];

@@ -12,6 +12,15 @@ export interface GitHubRepoData {
 
 const RAW_GITHUB_BASE = "https://raw.githubusercontent.com";
 
+function isLikelyBadgeOrPlaceholder(url: string): boolean {
+    const lower = url.toLowerCase();
+    return lower.includes('shields.io') ||
+        lower.includes('travis-ci') ||
+        lower.includes('github.com/workflows') ||
+        lower.includes('badge') ||
+        lower.includes('placeholder-image');
+}
+
 function getHeaders() {
     const headers: HeadersInit = {
         'Accept': 'application/vnd.github.v3+json',
@@ -25,8 +34,51 @@ function getHeaders() {
 // Helper to resolve relative URLs to absolute raw URLs
 function resolveUrl(repo: string, branch: string, path: string): string {
     if (path.startsWith('http')) return path;
+    if (path.startsWith('//')) return `https:${path}`;
     const cleanPath = path.replace(/^\.?\//, '');
     return `${RAW_GITHUB_BASE}/${repo}/${branch}/${cleanPath}`;
+}
+
+async function isValidRemoteImage(url: string): Promise<boolean> {
+    const headers = {
+        'User-Agent': 'Portfolio-App'
+    };
+
+    try {
+        const headResponse = await fetch(url, {
+            method: 'HEAD',
+            headers,
+            next: { revalidate: 3600 }
+        });
+
+        if (headResponse.ok) {
+            const contentType = headResponse.headers.get('Content-Type')?.toLowerCase() ?? '';
+            return contentType.startsWith('image/');
+        }
+
+        if (headResponse.status !== 403 && headResponse.status !== 405) {
+            return false;
+        }
+    } catch {
+        // Fall back to GET when HEAD is blocked by remote host.
+    }
+
+    try {
+        const getResponse = await fetch(url, {
+            method: 'GET',
+            headers,
+            next: { revalidate: 3600 }
+        });
+
+        if (!getResponse.ok) {
+            return false;
+        }
+
+        const contentType = getResponse.headers.get('Content-Type')?.toLowerCase() ?? '';
+        return contentType.startsWith('image/');
+    } catch {
+        return false;
+    }
 }
 
 export async function fetchRepoData(repo: string): Promise<GitHubRepoData | null> {
@@ -56,16 +108,6 @@ export async function fetchRepoData(repo: string): Promise<GitHubRepoData | null
 
         if (!response.ok) {
             console.error(`Failed to fetch README for ${repo} on branch ${defaultBranch}`);
-            // If README fails but we have meta description, return partial data
-            if (metaDescription) {
-                return {
-                    title: repo.split('/')[1],
-                    description: metaDescription,
-                    image: `https://opengraph.githubassets.com/1/${repo}`, // Fallback to social card
-                    year: new Date().getFullYear().toString(),
-                    repo
-                };
-            }
             return null;
         }
         const text = await response.text();
@@ -73,9 +115,32 @@ export async function fetchRepoData(repo: string): Promise<GitHubRepoData | null
         // 2. Extract Image
         // Look for <img src="..."> in the banner section or generally first image
         let image = "";
-        const imgMatch = text.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i) || text.match(/!\[.*?\]\((.*?)\)/);
-        if (imgMatch) {
-            image = resolveUrl(repo, defaultBranch, imgMatch[1]);
+        const mdImageRegex = /!\[.*?\]\((.*?)\)/g;
+        const htmlImageRegex = /<img\b[^>]*\bsrc\s*=\s*(["'])(.*?)\1/gi;
+        const candidates: string[] = [];
+
+        let match;
+        while ((match = mdImageRegex.exec(text)) !== null) {
+            if (match[1]) candidates.push(match[1].trim());
+        }
+        while ((match = htmlImageRegex.exec(text)) !== null) {
+            if (match[2]) candidates.push(match[2].trim());
+        }
+
+        for (const candidate of candidates) {
+            if (!candidate || isLikelyBadgeOrPlaceholder(candidate)) {
+                continue;
+            }
+
+            const resolved = resolveUrl(repo, defaultBranch, candidate);
+            if (await isValidRemoteImage(resolved)) {
+                image = resolved;
+                break;
+            }
+        }
+
+        if (!image) {
+            return null;
         }
 
         // 3. Extract Title
