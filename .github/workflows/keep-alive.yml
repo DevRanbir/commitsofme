@@ -1,0 +1,19 @@
+name: Keep Alive Ping
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # every 5 minutes
+  workflow_dispatch:        # allows manual run
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping homepage
+        run: curl -I https://itsranbir.me
+
+      - name: Ping fallback (retry)
+        run: |
+          sleep 10
+          curl -I https://itsranbir.me
