@@ -3,17 +3,21 @@ name: Keep Alive Ping
 on:
   schedule:
     - cron: '*/5 * * * *'   # every 5 minutes
-  workflow_dispatch:        # allows manual run
+  workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ping homepage
+      - name: Ping rootlynk
+        run: curl -I https://rootlynk.itsranbir.me
+
+      - name: Ping main site
         run: curl -I https://itsranbir.me
 
-      - name: Ping fallback (retry)
+      - name: Retry fallback
         run: |
           sleep 10
+          curl -I https://rootlynk.itsranbir.me
           curl -I https://itsranbir.me
