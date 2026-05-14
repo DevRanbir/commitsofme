@@ -2,7 +2,7 @@ name: Keep Alive Ping
 
 on:
   schedule:
-    - cron: '*/5 * * * *'   # every 5 minutes
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -10,14 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ping rootlynk
-        run: curl -I https://rootlynk.itsranbir.me
-
-      - name: Ping main site
-        run: curl -I https://itsranbir.me
-
-      - name: Retry fallback
+      - name: Ping Sites
         run: |
-          sleep 10
-          curl -I https://rootlynk.itsranbir.me
-          curl -I https://itsranbir.me
+          urls=(
+            "https://rootlynk.itsranbir.me"
+            "https://itsranbir.me"
+            "https://dsa.itsranbir.me"
+          )
+
+          for url in "${urls[@]}"; do
+            echo "Pinging $url"
+            curl -L --max-time 20 "$url"
+            sleep 5
+          done
