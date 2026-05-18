@@ -16,6 +16,8 @@ jobs:
             "https://rootlynk.itsranbir.me"
             "https://itsranbir.me"
             "https://dsa.itsranbir.me"
+            "https://gitto.itsranbir.me/"
+            "https://gittolinkedin-63830034108.europe-west1.run.app/"
           )
 
           for url in "${urls[@]}"; do
